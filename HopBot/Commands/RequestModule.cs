@@ -1,4 +1,4 @@
-﻿using HopBot.Helpers;
+using HopBot.Helpers;
 using HopBot.MapService;
 using HopBot.Models;
 using Discord.Commands;
@@ -141,7 +141,19 @@ namespace HopBot.Commands
                     if(_config.GetValue<bool>("EnableFastDl"))
                     {
                         await downloadMessageGb.ModifyAsync(msg => msg.Content = $"```Now compressing to Fastdl...```");
-                        fileService.CompressToFastdl(_mapFileBsp);
+                        
+                        var _bspPath = Path.Combine(_config.GetValue<string>("ExtractPath:0"), _mapFileBsp);
+                        
+                        FileInfo _bspFileInfo = new FileInfo(_bspPath);
+
+			            if (_bspFileInfo.Length > 157286400)
+			            {
+                            fileService.CopyToFastdl(_mapFileBsp);
+                        }  
+                        else
+                        {
+                            fileService.CompressToFastdl(_mapFileBsp);
+                        }
                     }
 
                     await ModifyDelete(downloadMessageGb, "Request completed successfully.", 5);
